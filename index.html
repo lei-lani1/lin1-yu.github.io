@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>解决Jupyter中文字体不显示问题</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        pre {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            padding: 10px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>解决Jupyter中文字体不显示问题</h1>
+
+    <h2>检查所有可用字体</h2>
+    <pre>
+import matplotlib.font_manager as fm
+# 查看所有字体数量
+all_fonts = [f.name for f in fm.fontManager.ttflist]
+print(f"系统总字体数量: {len(all_fonts)}")
+# 查看前20个字体名称
+print("前20个字体:", all_fonts[:20])
+    </pre>
+
+    <h2>检查macOS特定的中文字体</h2>
+    <pre>
+# macOS常见的中文字体名称
+mac_fonts = [f.name for f in fm.fontManager.ttflist if any(keyword in f.name.lower() for keyword in 
+ ['pingfang', 'hiragino', 'heiti', 'st', 'apple', 'ms', 'microsoft', 'noto', 'source han'])]
+print("macOS相关字体:", mac_fonts[:20])
+    </pre>
+
+    <h2>检查字体文件路径</h2>
+    <pre>
+# 查看字体文件的实际路径
+font_paths = []
+for f in fm.fontManager.ttflist[:50]: # 查看前50个
+ if hasattr(f, 'fname'):
+ font_paths.append(f.fname)
+print("字体文件路径示例:")
+for path in font_paths[:10]:
+print(path)
+    </pre>
+
+    <h2>方案1：使用macOS自带的中文字体</h2>
+    <pre>
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+# 设置中文字体
+plt.rcParams['font.sans-serif'] = ['PingFang SC', 'Heiti SC', 'Songti SC']
+plt.rcParams['axes.unicode_minus'] = False # 解决负号显示问题
+# 或者直接指定字体
+font_path = '/System/Library/Fonts/PingFang.ttc' # 苹方字体路径
+
+# 测试
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+# 设置中文字体
+plt.rcParams['font.sans-serif'] = ['PingFang SC', 'Heiti SC', 'Songti SC']
+plt.rcParams['axes.unicode_minus'] = False
+# 测试
+plt.plot([1,2,3], [1,4,9])
+plt.title('中文标题测试')
+plt.xlabel('X轴')
+plt.ylabel('Y轴')
+plt.show()
+    </pre>
+
+    <h2>方案二: 使用plotly.express 或 plotly.graph_objects</h2>
+    <pre>
+#设置中文显示 
+import plotly.express as px
+import plotly.graph_objects as go
+
+# 测试
+import plotly.express as px 
+import plotly.graph_objects as go 
+import pandas as pd 
+
+# 创建示例数据 
+data = { 
+ '日期': ['2026-01-01', '2026-01-02', '2026-01-03', '2026-01-04', '2026-01-05'], 
+ '销售额': [100, 200, 150, 300, 250], 
+ '成本': [60, 120, 90, 180, 150] 
+} 
+df = pd.DataFrame(data) 
+
+# 使用plotly.express绘制折线图 
+fig1 = px.line(df, x='日期', y='销售额', title='销售额趋势') 
+fig1.show() 
+
+# 使用plotly.graph_objects绘制柱状图 
+fig2 = go.Figure() 
+fig2.add_trace(go.Bar(x=df['日期'], y=df['销售额'], name='销售额')) 
+fig2.add_trace(go.Bar(x=df['日期'], y=df['成本'], name='成本')) 
+fig2.update_layout(title='销售额与成本对比', barmode='group') 
+fig2.show()
+    </pre>
+</body>
+</html>
